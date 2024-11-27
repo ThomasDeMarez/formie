@@ -6,6 +6,7 @@ use verbb\formie\base\Captcha;
 use verbb\formie\base\Field;
 use verbb\formie\base\FieldInterface;
 use verbb\formie\base\FieldTrait;
+use verbb\formie\base\NestedFieldInterface;
 use verbb\formie\base\MultiNestedFieldInterface;
 use verbb\formie\base\SingleNestedFieldInterface;
 use verbb\formie\elements\actions\SetSubmissionSpam;
@@ -379,15 +380,23 @@ class Submission extends CustomElement
         return true;
     }
 
-    public function getAttributeLabel($attribute): string
+    public function attributeLabels(): array
     {
-        // For nested fields, we only care about the deepest field
-        if (str_contains($attribute, '.')) {
-            $attribute = explode('.', $attribute);
-            $attribute = array_pop($attribute);
-        }
+        $labels = parent::attributeLabels();
 
-        return parent::getAttributeLabel($attribute);
+        $processFields = function ($fields) use (&$processFields, &$labels) {
+            foreach ($fields as $field) {
+                $labels[$field->fieldKey] = $field->label;
+                
+                if ($field instanceof NestedFieldInterface) {
+                    $processFields($field->getFields());
+                }
+            }
+        };
+
+        $processFields($this->getFields());
+
+        return $labels;
     }
 
     public function getStatus(): ?string
