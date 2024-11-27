@@ -504,6 +504,20 @@ const getters = {
 
                 // Some fields have __toString implemented.
                 'verbb\\formie\\fields\\Name',
+                'verbb\\formie\\fields\\subfields\\NameFirst',
+                'verbb\\formie\\fields\\subfields\\NameLast',
+                'verbb\\formie\\fields\\subfields\\NameMiddle',
+                'verbb\\formie\\fields\\subfields\\NamePrefix',
+
+                // Some fields have __toString implemented.
+                'verbb\\formie\\fields\\Address',
+                'verbb\\formie\\fields\\subfields\\Address1',
+                'verbb\\formie\\fields\\subfields\\Address2',
+                'verbb\\formie\\fields\\subfields\\Address3',
+                'verbb\\formie\\fields\\subfields\\AddressCity',
+                'verbb\\formie\\fields\\subfields\\AddressZip',
+                'verbb\\formie\\fields\\subfields\\AddressState',
+                'verbb\\formie\\fields\\subfields\\AddressCountry',
 
                 ...options.extra ?? [],
             ];
