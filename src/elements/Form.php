@@ -7,6 +7,7 @@ use verbb\formie\base\EmailMarketing;
 use verbb\formie\base\FieldInterface;
 use verbb\formie\base\Miscellaneous;
 use verbb\formie\base\NestedFieldInterface;
+use verbb\formie\base\StorageInterface;
 use verbb\formie\elements\actions\DuplicateForm;
 use verbb\formie\elements\conditions\FormCondition;
 use verbb\formie\elements\db\FormQuery;
@@ -274,6 +275,7 @@ class Form extends Element
     private array $_frontEndJsEvents = [];
     private ?string $_redirectUrl = null;
     private ?string $_actionUrl = null;
+    private string $_storageBehaviour = 'session';
 
     // Render Options
     private array $_renderOptions = [];
@@ -637,7 +639,7 @@ class Form extends Element
 
         if ($pages) {
             // Check if there's a session variable
-            $pageId = Session::get($this->_getSessionKey('pageId'));
+            $pageId = $this->getStorage()->getCurrentPageId($this);
 
             if ($pageId) {
                 $currentPage = ArrayHelper::firstWhere($pages, 'id', $pageId);
@@ -752,24 +754,14 @@ class Form extends Element
 
     public function setCurrentPage(FieldLayoutPage $page = null): void
     {
-        if (Craft::$app->getRequest()->getIsConsoleRequest() || !Session::exists()) {
-            return;
+        if ($page) {
+            $this->getStorage()->setCurrentPageId($this, $page->id);
         }
-
-        if (!$page) {
-            return;
-        }
-
-        Session::set($this->_getSessionKey('pageId'), $page->id);
     }
 
     public function resetCurrentPage(): void
     {
-        if (Craft::$app->getRequest()->getIsConsoleRequest() || !Session::exists()) {
-            return;
-        }
-
-        Session::remove($this->_getSessionKey('pageId'));
+        $this->getStorage()->resetCurrentPageId($this);
     }
 
     public function isLastPage(FieldLayoutPage $currentPage = null): bool
@@ -856,6 +848,21 @@ class Form extends Element
         Session::remove($this->_getSessionKey('submissionId'));
 
         $this->_currentSubmission = null;
+    }
+
+    public function getStorageBehaviour(): string
+    {
+        return $this->_storageBehaviour;
+    }
+
+    public function setStorageBehaviour(string $behaviour): void
+    {
+        $this->_storageBehaviour = $behaviour;
+    }
+
+    public function getStorage(): StorageInterface
+    {
+        return Formie::$plugin->getStorage()->getStorage($this->getStorageBehaviour());
     }
 
     public function setSubmission(?Submission $submission): void

@@ -67,6 +67,11 @@
                     {{ hiddenInput('editingSubmission', true) }}
                 {% endif %}
 
+                {% if form.getStorageBehaviour() != 'session' %}
+                    {{ hiddenInput('storage', form.getStorageBehaviour()) }}
+                    {{ hiddenInput('pageIndex', form.getCurrentPageIndex()) }}
+                {% endif %}
+
                 {% if form.getRedirectUrl() %}
                     {{ redirectInput(form.getRedirectUrl()) }}
                 {% endif %}

@@ -424,6 +424,7 @@ class SubmissionsController extends Controller
         $goToPageId = $this->_getTypedParam('goToPageId', 'id');
         $completeSubmission = $this->_getTypedParam('completeSubmission', 'boolean');
         $submitAction = $this->_getTypedParam('submitAction', 'string', 'submit');
+        $storage = $this->_getTypedParam('storage', 'string', 'session');
 
         Formie::info("Submission triggered for {$handle}.");
 
@@ -442,6 +443,9 @@ class SubmissionsController extends Controller
         $settings = $form->settings;
         $defaultStatus = $form->getDefaultStatus();
         $errorMessage = $form->settings->getErrorMessage();
+
+        // Update the storage mechanism, which can't be set via sessions, and we've re-fetched the form
+        $form->setStorageBehaviour($storage);
 
         // If we're going back, and want to  navigate without saving
         if ($submitAction === 'back' && !$formieSettings->enableBackSubmission) {
