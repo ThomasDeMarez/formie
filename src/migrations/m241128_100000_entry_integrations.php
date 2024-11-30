@@ -49,7 +49,7 @@ class m241128_100000_entry_integrations extends Migration
                 }
 
                 if ($sectionUid && $entryTypeUid) {
-                    $settings['integrations']['entry']['entryTypeUid'] = "$sectionUid:$entryTypeUid";
+                    $settings['integrations']['entry']['entryTypeSection'] = "$sectionUid:$entryTypeUid";
                     $updatedSettings = true;
                 }
             }
