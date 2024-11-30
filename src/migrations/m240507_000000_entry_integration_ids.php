@@ -11,6 +11,7 @@ use verbb\formie\integrations\elements\Entry as EntryIntegration;
 use Craft;
 use craft\db\Migration;
 use craft\db\Query;
+use craft\db\Table;
 use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
@@ -43,6 +44,13 @@ class m240507_000000_entry_integration_ids extends Migration
                 $settings = Json::decode($form['settings']);
                 $entryIntegrationSettings = $settings['integrations'][$entryIntegration['handle']] ?? [];
                 $entryTypeId = $entryIntegrationSettings['entryTypeId'] ?? null;
+
+                // Check if already migrated to UID in Formie 2
+                $entryTypeUid = $entryIntegrationSettings['entryTypeUid'] ?? null;
+
+                if ($entryTypeUid) {
+                    $entryTypeId = Db::idByUid(Table::ENTRYTYPES, $entryTypeUid);
+                }
 
                 if (!$entryTypeId) {
                     continue;

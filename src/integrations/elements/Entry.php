@@ -45,6 +45,7 @@ class Entry extends Element
     {
         // Normalize the options
         unset($config['entryTypeId']);
+        unset($config['entryTypeUid']);
 
         parent::__construct($config);
     }
@@ -69,7 +70,7 @@ class Entry extends Element
                 $fields = $this->getFieldLayoutFields($entryType->getFieldLayout());
 
                 $customFields[$section->name][] = new IntegrationCollection([
-                    'id' => $section->id . ':' . $entryType->id,
+                    'id' => $section->uid . ':' . $entryType->uid,
                     'name' => $entryType->name,
                     'fields' => $fields,
                 ]);
@@ -188,11 +189,11 @@ class Entry extends Element
         }
 
         try {
-            [$sectionId, $entryTypeId] = explode(':', $this->entryTypeSection);
+            [$sectionUid, $entryTypeUid] = explode(':', $this->entryTypeSection);
 
-            $entry = $this->getElementForPayload(EntryElement::class, $entryTypeId, $submission, [
-                'typeId' => $entryTypeId,
-                'sectionId' => $sectionId,
+            $entry = $this->getElementForPayload(EntryElement::class, $entryTypeUid, $submission, [
+                'typeUid' => $entryTypeUid,
+                'sectionUid' => $sectionUid,
             ]);
 
             $entry->siteId = $submission->siteId;
@@ -372,7 +373,7 @@ class Entry extends Element
         $entryTypes = $this->getFormSettingValue('elements');
 
         foreach ($entryTypes as $key => $entryType) {
-            if ($collection = ArrayHelper::firstWhere($entryType, 'id', $this->entryTypeSection)) {
+            if ($collection = ArrayHelper::firstWhere($entryType, 'uid', $this->entryTypeSection)) {
                 return $collection;
             }
         }

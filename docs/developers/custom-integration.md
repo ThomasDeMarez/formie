@@ -84,9 +84,9 @@ class ExampleCaptcha extends Captcha
 
     public function getSettingsHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-        ]);
+        $variables = $this->getSettingsHtmlVariables();
+
+        return Craft::$app->getView()->renderTemplate('path/to/settings', $variables);
     }
 
     public function getFrontEndHtml(Form $form, $page = null): string
@@ -164,9 +164,9 @@ class ExampleAddressProvider extends AddressProvider
 
     public function getSettingsHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-        ]);
+        $variables = $this->getSettingsHtmlVariables();
+
+        return Craft::$app->getView()->renderTemplate('path/to/settings', $variables);
     }
 
     public function getFrontEndHtml($field, $options): string
@@ -236,17 +236,16 @@ class ExampleElement extends Element
 
     public function getSettingsHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-        ]);
+        $variables = $this->getSettingsHtmlVariables();
+
+        return Craft::$app->getView()->renderTemplate('path/to/settings', $variables);
     }
 
     public function getFormSettingsHtml($form): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-            'form' => $form,
-        ]);
+        $variables = $this->getFormSettingsHtmlVariables($form);
+
+        return Craft::$app->getView()->renderTemplate('path/to/form-settings', $variables);
     }
 
     public function fetchFormSettings()
@@ -365,17 +364,16 @@ class ExampleEmailMarketing extends EmailMarketing
 
     public function getSettingsHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-        ]);
+        $variables = $this->getSettingsHtmlVariables();
+
+        return Craft::$app->getView()->renderTemplate('path/to/settings', $variables);
     }
 
     public function getFormSettingsHtml($form): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-            'form' => $form,
-        ]);
+        $variables = $this->getFormSettingsHtmlVariables($form);
+
+        return Craft::$app->getView()->renderTemplate('path/to/form-settings', $variables);
     }
 
     public function fetchFormSettings()
@@ -497,17 +495,16 @@ class ExampleCrm extends Crm
 
     public function getSettingsHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-        ]);
+        $variables = $this->getSettingsHtmlVariables();
+
+        return Craft::$app->getView()->renderTemplate('path/to/settings', $variables);
     }
 
     public function getFormSettingsHtml($form): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-            'form' => $form,
-        ]);
+        $variables = $this->getFormSettingsHtmlVariables($form);
+
+        return Craft::$app->getView()->renderTemplate('path/to/form-settings', $variables);
     }
 
     public function fetchFormSettings()
@@ -639,17 +636,16 @@ class ExampleWebhook extends Webhook
 
     public function getSettingsHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-        ]);
+        $variables = $this->getSettingsHtmlVariables();
+
+        return Craft::$app->getView()->renderTemplate('path/to/settings', $variables);
     }
 
     public function getFormSettingsHtml($form): string
     {
-        return Craft::$app->getView()->renderTemplate('path/to/settings', [
-            'integration' => $this,
-            'form' => $form,
-        ]);
+        $variables = $this->getFormSettingsHtmlVariables($form);
+
+        return Craft::$app->getView()->renderTemplate('path/to/form-settings', $variables);
     }
 
     public function fetchFormSettings()
