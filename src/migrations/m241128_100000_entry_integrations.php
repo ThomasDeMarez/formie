@@ -3,6 +3,7 @@ namespace verbb\formie\migrations;
 
 use verbb\formie\elements\Form;
 use verbb\formie\fields\formfields\Date;
+use verbb\formie\integrations\elements\Entry as EntryIntegration;
 
 use Craft;
 use craft\db\Migration;
@@ -20,21 +21,26 @@ class m241128_100000_entry_integrations extends Migration
      */
     public function safeUp(): bool
     {
-        $forms = (new Query())
+        $entryIntegrations = (new Query())
             ->select(['*'])
-            ->from('{{%formie_forms}}')
+            ->from(['{{%formie_integrations}}'])
+            ->where(['type' => EntryIntegration::class])
             ->all();
 
-        foreach ($forms as $form) {
-            $updatedSettings = false;
-            $settings = Json::decode($form['settings']);
-            $integrations = $settings['integrations'] ?? [];
-            $entryIntegration = $integrations['entry'] ?? [];
-            
-            if ($entryIntegration) {
+        foreach ($entryIntegrations as $entryIntegration) {
+            $forms = (new Query())
+                ->select(['*'])
+                ->from(['{{%formie_forms}}'])
+                ->all();
+
+            foreach ($forms as $form) {
+                $updatedSettings = false;
                 $sectionUid = null;
                 $entryTypeUid = null;
-                $entryTypeSectionIds = $entryIntegration['entryTypeSection'] ?? null;
+
+                $settings = Json::decode($form['settings']);
+                $entryIntegrationSettings = $settings['integrations'][$entryIntegration['handle']] ?? [];
+                $entryTypeSectionIds = $entryIntegrationSettings['entryTypeSection'] ?? null;
 
                 if ($entryTypeSectionIds) {
                     [$sectionId, $entryTypeId] = explode(':', $entryTypeSectionIds);
@@ -49,13 +55,13 @@ class m241128_100000_entry_integrations extends Migration
                 }
 
                 if ($sectionUid && $entryTypeUid) {
-                    $settings['integrations']['entry']['entryTypeSection'] = "$sectionUid:$entryTypeUid";
+                    $settings['integrations'][$entryIntegration['handle']]['entryTypeSection'] = "$sectionUid:$entryTypeUid";
                     $updatedSettings = true;
                 }
-            }
 
-            if ($updatedSettings) {
-                $this->update('{{%formie_forms}}', ['settings' => Json::encode($settings)], ['id' => $form['id']]);
+                if ($updatedSettings) {
+                    $this->update('{{%formie_forms}}', ['settings' => Json::encode($settings)], ['id' => $form['id']]);
+                }
             }
         }
 

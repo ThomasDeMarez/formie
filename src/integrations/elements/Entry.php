@@ -373,7 +373,7 @@ class Entry extends Element
         $entryTypes = $this->getFormSettingValue('elements');
 
         foreach ($entryTypes as $key => $entryType) {
-            if ($collection = ArrayHelper::firstWhere($entryType, 'uid', $this->entryTypeSection)) {
+            if ($collection = ArrayHelper::firstWhere($entryType, 'id', $this->entryTypeSection)) {
                 return $collection;
             }
         }
