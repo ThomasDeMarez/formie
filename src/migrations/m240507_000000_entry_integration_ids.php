@@ -11,7 +11,6 @@ use verbb\formie\integrations\elements\Entry as EntryIntegration;
 use Craft;
 use craft\db\Migration;
 use craft\db\Query;
-use craft\db\Table;
 use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
