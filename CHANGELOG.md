@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.14 - 2024-12-03
+
+### Fixed
+- Fix User and Entry element integration settings migration.
+- Fix an error during Formie 2 migration.
+
 ## 3.0.13 - 2024-12-02
 
 ### Added
@@ -444,6 +450,11 @@
 - `Submission::getCustomFields()` method has been deprecated. Use `Submission::getFields()` instead.
 - `Field::name` attribute has been deprecated. Use `Field::label` instead.
 - `Field::inputHtml()` method has been deprecated. Use `Field::cpInputHtml()` instead.
+
+## 2.1.35 - 2024-12-03
+
+### Fixed
+- Fix User and Entry element integration settings migration.
 
 ## 2.1.34 - 2024-12-02
 
