@@ -2,6 +2,9 @@
 
 ## 3.0.13 - 2024-12-02
 
+### Added
+- Add the ability to change the storage behaviour of forms, rather than rely on sessions.
+
 ### Fixed
 - Fix an error when saving integration settings for forms.
 - Fix User element integrations not using UIDs for the target groups.
@@ -11,7 +14,6 @@
 - Fix some missing translations.
 - Fix Nested and Sub fields not showing the correct field label for validation.
 - Fix plain-text variable pickers not working for multi-Name and Address fields.
-- Add the ability to change the storage behaviour of forms, rather than rely on sessions.
 - Fix asset bundle path when editing submissions in the control panel for Craft Cloud compatibility.
 - Fix an error when deleting notifications.
 - Fix status indicator for disabled notifications.
