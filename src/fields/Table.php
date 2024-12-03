@@ -10,7 +10,9 @@ use verbb\formie\helpers\ArrayHelper;
 use verbb\formie\helpers\SchemaHelper;
 use verbb\formie\helpers\StringHelper;
 use verbb\formie\fields\data\ColorData;
+use verbb\formie\gql\types\TableRowType;
 use verbb\formie\gql\types\generators\KeyValueGenerator;
+use verbb\formie\gql\types\generators\TableRowTypeGenerator;
 use verbb\formie\models\HtmlTag;
 use verbb\formie\models\IntegrationField;
 use verbb\formie\models\Notification;
@@ -21,8 +23,6 @@ use craft\base\Element;
 use craft\base\ElementInterface;
 use craft\fields\Table as CraftTable;
 use craft\gql\GqlEntityRegistry;
-use craft\gql\types\generators\TableRowType as TableRowTypeGenerator;
-use craft\gql\types\TableRow;
 use craft\helpers\Component;
 use craft\helpers\Cp;
 use craft\helpers\DateTimeHelper;
@@ -334,7 +334,7 @@ class Table extends Field
 
         return Type::listOf(GqlEntityRegistry::getOrCreate($typeName, fn() => new InputObjectType([
             'name' => $typeName,
-            'fields' => fn() => TableRow::prepareRowFieldDefinition($this->columns, false),
+            'fields' => fn() => TableRowType::prepareRowFieldDefinition($this),
         ])));
     }
 
