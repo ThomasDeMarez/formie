@@ -969,6 +969,10 @@ class Date extends SubField implements PreviewableFieldInterface, SortableFieldI
                     return $field->defaultValue;
                 },
             ],
+            'displayType' => [
+                'name' => 'displayType',
+                'type' => Type::string(),
+            ],
             'defaultDate' => [
                 'name' => 'defaultDate',
                 'type' => DateTimeType::getType(),
