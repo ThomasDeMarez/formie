@@ -128,8 +128,8 @@ class Date extends SubField implements PreviewableFieldInterface, SortableFieldI
             }
         }
 
-        if (isset($config['defaultValue']) && isset($config['defaultOption'])) {
-            if ($config['defaultOption'] === 'date') {
+        if (isset($config['defaultOption'])) {
+            if (isset($config['defaultValue']) && $config['defaultOption'] === 'date') {
                 if (!($config['defaultValue'] instanceof DateTime)) {
                     $config['defaultValue'] = DateTimeHelper::toDateTime($config['defaultValue'], false, false) ?: null;
                 }
