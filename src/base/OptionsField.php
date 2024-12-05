@@ -194,7 +194,7 @@ abstract class OptionsField extends Field implements OptionsFieldInterface, Prev
         foreach ($this->options() as $option) {
             if (!isset($option['optgroup'])) {
                 $selected = $this->isOptionSelected($option, $value, $selectedValues, $selectedBlankOption);
-                $options[] = new OptionData($option['label'], $option['value'], $selected, true);
+                $options[] = new OptionData($option['label'], (string)$option['value'], $selected, true);
                 $optionValues[] = (string)$option['value'];
                 $optionLabels[] = (string)$option['label'];
             }
@@ -429,7 +429,7 @@ abstract class OptionsField extends Field implements OptionsFieldInterface, Prev
 
     protected function isOptionSelected(array $option, mixed $value, array &$selectedValues, bool &$selectedBlankOption): bool
     {
-        return in_array($option['value'], $selectedValues, true);
+        return in_array((string)$option['value'], $selectedValues, true);
     }
 
     protected function translatedOptions(): array
@@ -444,7 +444,7 @@ abstract class OptionsField extends Field implements OptionsFieldInterface, Prev
             } else {
                 $translatedOptions[] = [
                     'label' => Craft::t('formie', $option['label']),
-                    'value' => $option['value'],
+                    'value' => (string)$option['value'],
                 ];
             }
         }
@@ -459,7 +459,7 @@ abstract class OptionsField extends Field implements OptionsFieldInterface, Prev
 
             foreach ($this->options() as $option) {
                 if (!empty($option['isDefault'])) {
-                    $defaultValues[] = $option['value'];
+                    $defaultValues[] = (string)$option['value'];
                 }
             }
 
@@ -468,7 +468,7 @@ abstract class OptionsField extends Field implements OptionsFieldInterface, Prev
 
         foreach ($this->options() as $option) {
             if (!empty($option['isDefault'])) {
-                return $option['value'];
+                return (string)$option['value'];
             }
         }
 
