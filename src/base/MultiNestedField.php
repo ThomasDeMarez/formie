@@ -195,26 +195,6 @@ abstract class MultiNestedField extends NestedField implements MultiNestedFieldI
         return $values;
     }
 
-    public function populateValue(mixed $value, ?Submission $submission): void
-    {
-        if (!is_array($value)) {
-            $value = [];
-        }
-
-        // Prepare and populate any child field from the parent field
-        foreach ($value as $rowKey => $row) {
-            foreach ($this->getFields() as $field) {
-                if (is_array($row) || $row instanceof Model) {
-                    $subFieldValue = ArrayHelper::getValue($row, $field->handle);
-
-                    $field->populateValue($subFieldValue, $submission);
-                }
-            }
-        }
-
-        parent::populateValue($value, $submission);
-    }
-
     public function beforeElementSave(ElementInterface $element, bool $isNew): bool
     {
         $hasErrors = false;

@@ -147,20 +147,6 @@ abstract class SingleNestedField extends NestedField implements SingleNestedFiel
         return $values;
     }
 
-    public function populateValue(mixed $value, ?Submission $submission): void
-    {
-        // Prepare and populate any child field from the parent field
-        foreach ($this->getFields() as $field) {
-            if (is_array($value) || $value instanceof Model) {
-                $subFieldValue = ArrayHelper::getValue($value, $field->handle);
-
-                $field->populateValue($subFieldValue, $submission);
-            }
-        }
-
-        parent::populateValue($value, $submission);
-    }
-
     public function beforeElementSave(ElementInterface $element, bool $isNew): bool
     {
         $hasErrors = false;
