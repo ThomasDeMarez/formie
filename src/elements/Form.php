@@ -1942,6 +1942,15 @@ class Form extends Element
             return false;
         }
 
+        // If a new form, enable any globally-enabled captchas
+        if ($isNew) {
+            foreach (Formie::$plugin->getIntegrations()->getAllCaptchas() as $captcha) {
+                if ($captcha->getEnabled() && $captcha->hasFormSettings()) {
+                    $this->settings->integrations[$captcha->handle]['enabled'] = true;
+                }
+            }
+        }
+
         // Save the field layout as the last step
         return Formie::$plugin->getFields()->saveLayout($this->getFormLayout());
     }
