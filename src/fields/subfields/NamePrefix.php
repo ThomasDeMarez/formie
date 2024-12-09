@@ -44,6 +44,11 @@ class NamePrefix extends Dropdown implements SubFieldInnerFieldInterface
     // Public Methods
     // =========================================================================
 
+    public function allowDuplicateLabels(): bool
+    {
+        return true;
+    }
+
     public function getDefaultOptions(): array
     {
         $options = [
@@ -69,6 +74,45 @@ class NamePrefix extends Dropdown implements SubFieldInnerFieldInterface
     public function getValueForVariable(mixed $value, Submission $submission, Notification $notification): mixed
     {
         return $this->_getValueLabel($value);
+    }
+
+    public function defineGeneralSchema(): array
+    {
+        return [
+            SchemaHelper::labelField(),
+            SchemaHelper::tableField([
+                'label' => Craft::t('formie', 'Options'),
+                'help' => Craft::t('formie', 'Define the available options for users to select from.'),
+                'name' => 'options',
+                'validation' => '+min:1|uniqueTableCellValue',
+                'allowMultipleDefault' => false,
+                'enableBulkOptions' => true,
+                'predefinedOptions' => $this->getPredefinedOptions(),
+                'newRowDefaults' => [
+                    'label' => '',
+                    'value' => '',
+                    'isOptgroup' => false,
+                    'isDefault' => false,
+                ],
+                'columns' => [
+                    [
+                        'type' => 'label',
+                        'label' => Craft::t('formie', 'Option Label'),
+                        'class' => 'singleline-cell textual',
+                    ],
+                    [
+                        'type' => 'value',
+                        'label' => Craft::t('formie', 'Value'),
+                        'class' => 'code singleline-cell textual',
+                    ],
+                    [
+                        'type' => 'default',
+                        'label' => Craft::t('formie', 'Default'),
+                        'class' => 'thin checkbox-cell',
+                    ],
+                ],
+            ]),
+        ];
     }
 
 

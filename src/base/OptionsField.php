@@ -112,6 +112,16 @@ abstract class OptionsField extends Field implements OptionsFieldInterface, Prev
         return [];
     }
 
+    public function allowDuplicateLabels(): bool
+    {
+        return false;
+    }
+
+    public function allowDuplicateValues(): bool
+    {
+        return false;
+    }
+
     public function validateOptions(): void
     {
         $labels = [];
@@ -151,11 +161,11 @@ abstract class OptionsField extends Field implements OptionsFieldInterface, Prev
             $labels[$optgroup][$label] = $values[$value] = true;
         }
 
-        if ($hasDuplicateLabels) {
+        if (!$this->allowDuplicateLabels() && $hasDuplicateLabels) {
             $this->addError('options', Craft::t('app', 'All option labels must be unique.'));
         }
 
-        if ($hasDuplicateValues) {
+        if (!$this->allowDuplicateValues() && $hasDuplicateValues) {
             $this->addError('options', Craft::t('app', 'All option values must be unique.'));
         }
     }
