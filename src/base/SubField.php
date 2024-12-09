@@ -43,6 +43,11 @@ abstract class SubField extends SingleNestedField implements SubFieldInterface
         return false;
     }
 
+    public function hasFieldLayout(): bool
+    {
+        return $this->hasSubFields();
+    }
+
     public function settingsAttributes(): array
     {
         $attributes = parent::settingsAttributes();

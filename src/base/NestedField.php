@@ -121,6 +121,11 @@ abstract class NestedField extends Field implements NestedFieldInterface
         return null;
     }
 
+    public function hasFieldLayout(): bool
+    {
+        return true;
+    }
+
     public function settingsAttributes(): array
     {
         $attributes = parent::settingsAttributes();
@@ -256,6 +261,10 @@ abstract class NestedField extends Field implements NestedFieldInterface
 
     public function validateFieldLayout(): void
     {
+        if (!$this->hasFieldLayout()) {
+            return;
+        }
+
         $fieldLayout = $this->getFieldLayout();
 
         if (!$fieldLayout->validate()) {
@@ -275,20 +284,22 @@ abstract class NestedField extends Field implements NestedFieldInterface
             return false;
         }
 
-        // Save the field layout as the last step
-        if (!Formie::$plugin->getFields()->saveLayout($this->getFieldLayout())) {
-            foreach ($this->getFieldLayout()->getPages() as $page) {
-                $errors = ArrayHelper::flatten($page->getErrors());
+        // Save the field layout as the last step - only if this has a field layout. Some SubFields opt-out
+        if ($this->hasFieldLayout()) {
+            if (!Formie::$plugin->getFields()->saveLayout($this->getFieldLayout())) {
+                foreach ($this->getFieldLayout()->getPages() as $page) {
+                    $errors = ArrayHelper::flatten($page->getErrors());
 
-                foreach ($errors as $errorKey => $error) {
-                    $this->addError($errorKey, $error);
+                    foreach ($errors as $errorKey => $error) {
+                        $this->addError($errorKey, $error);
+                    }
                 }
+
+                return false;
             }
 
-            return false;
+            $this->nestedLayoutId = $this->getFieldLayout()->id;
         }
-
-        $this->nestedLayoutId = $this->getFieldLayout()->id;
 
         return true;
     }
