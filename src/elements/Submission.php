@@ -722,14 +722,36 @@ class Submission extends CustomElement
         $fields = $this->snapshot['fields'] ?? [];
 
         foreach ($fields as $handle => $settings) {
-            $form->setFieldSettings($handle, $settings, false);
+            $this->setFieldSettings($handle, $settings);
         }
 
         // Do the same for form settings
         $formSettings = $this->snapshot['form'] ?? null;
 
         if ($formSettings) {
-            $form->settings->setAttributes($formSettings, false);
+            $this->_form->settings->setAttributes($formSettings, false);
+        }
+    }
+
+    public function setFieldSettings(string $handle, array $settings): void
+    {
+        $field = null;
+        
+        // Check for nested fields so we can use `group.dropdown` or `dropdown`.
+        $handles = explode('.', $handle);
+
+        if (count($handles) > 1) {
+            $parentField = $this->getFieldByHandle($handles[0]);
+
+            if ($parentField) {
+                $field = $parentField->getFieldByHandle($handles[1]);
+            }
+        } else {
+            $field = $this->getFieldByHandle($handles[0]);
+        }
+
+        if ($field) {
+            $field->setAttributes($settings, false);
         }
     }
 
