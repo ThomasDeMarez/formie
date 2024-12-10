@@ -217,8 +217,13 @@ class Stencils extends Component
                 }
             }
 
-            // Save the status
-            $stencilRecord->save(false);
+            // Save the stencil
+            if ($wasTrashed = (bool)$stencilRecord->dateDeleted) {
+                $stencilRecord->restore();
+            } else {
+                $stencilRecord->save(false);
+            }
+
             $transaction->commit();
         } catch (Throwable $e) {
             $transaction->rollBack();
