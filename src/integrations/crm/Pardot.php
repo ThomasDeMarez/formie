@@ -68,16 +68,37 @@ class Pardot extends Crm implements OAuthProviderInterface
         return App::parseBooleanEnv($this->useSandbox);
     }
 
+    public function getBusinessUnitId(): string
+    {
+        return App::parseEnv($this->businessUnitId);
+    }
+
     public function getApiDomain(): string
     {
         $prefix = $this->getUseSandbox() ? 'pi.demo' : 'pi';
 
-        return "https://{$prefix}.pardot.com/api";
+        return "https://{$prefix}.pardot.com/api/";
     }
 
     public function getDescription(): string
     {
         return Craft::t('formie', 'Manage your {name} customers by providing important information on their conversion on your site.', ['name' => static::displayName()]);
+    }
+
+    public function getOAuthProviderConfig(): array
+    {
+        $config = parent::getOAuthProviderConfig();
+        $config['domain'] = $this->getApiDomain();
+        $config['baseApiUrl'] = $this->getApiDomain();
+
+        return $config;
+    }
+
+    public function request(string $method, string $uri, array $options = []): mixed
+    {
+        $options['headers']['Pardot-Business-Unit-Id'] = $this->getBusinessUnitId();
+
+        return parent::request($method, $uri, $options);
     }
 
     public function fetchFormSettings(): IntegrationFormSettings
