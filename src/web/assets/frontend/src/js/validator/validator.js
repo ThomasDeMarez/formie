@@ -52,8 +52,12 @@ class FormieValidator {
 
     inputs(inputOrSelector = null) {
         // If this was a single form input, return straight away
-        if (inputOrSelector instanceof HTMLElement && inputOrSelector.getAttribute('type')) {
-            return [inputOrSelector];
+        if (inputOrSelector instanceof HTMLElement) {
+            const validFormTags = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'];
+
+            if (validFormTags.includes(inputOrSelector.tagName.toUpperCase())) {
+                return [inputOrSelector];
+            }
         }
 
         // Otherwise, it's a selector to a regular DOM element. Find all inputs within that.
