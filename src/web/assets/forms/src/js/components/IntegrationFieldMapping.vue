@@ -169,12 +169,25 @@ export default {
                 options.push(providerOptions);
             }
 
+            const sites = Craft.sites.map((site) => {
+                return { label: site.name, value: site.handle };
+            });
+
             options.push({
                 label: Craft.t('formie', 'Submission'),
                 options: [
                     { label: Craft.t('formie', 'Title'), value: '{submission:title}' },
                     { label: Craft.t('formie', 'ID'), value: '{submission:id}' },
                     { label: Craft.t('formie', 'Form Name'), value: '{submission:formName}' },
+                    {
+                        label: Craft.t('formie', 'Site'),
+                        value: '{submission:siteHandle}',
+                        valueType: 'select',
+                        valueOptions: [
+                            { label: Craft.t('formie', 'Select an option'), value: '' },
+                            ...sites,
+                        ],
+                    },
                 ],
             });
 

@@ -764,6 +764,15 @@ class Submission extends CustomElement
         return null;
     }
 
+    public function getSiteHandle(): ?string
+    {
+        if ($site = $this->getSite()) {
+            return $site->handle;
+        }
+
+        return null;
+    }
+
     public function getStatusModel(): Status
     {
         if (!$this->_status && $this->statusId) {

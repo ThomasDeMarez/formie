@@ -71,6 +71,7 @@ class Variables
             ['label' => Craft::t('formie', 'General'), 'heading' => true],
             ['label' => Craft::t('formie', 'System Name'), 'value' => '{systemName}'],
             ['label' => Craft::t('formie', 'Site Name'), 'value' => '{siteName}'],
+            ['label' => Craft::t('formie', 'Site Handle'), 'value' => '{siteHandle}'],
             ['label' => Craft::t('formie', 'Timestamp'), 'value' => '{timestamp}'],
             ['label' => Craft::t('formie', 'Date (mm/dd/yyyy)'), 'value' => '{dateUs}'],
             ['label' => Craft::t('formie', 'Date (dd/mm/yyyy)'), 'value' => '{dateInt}'],
@@ -177,7 +178,9 @@ class Variables
 
             // Site Info
             $site = self::_getSite($submission);
+            $siteId = $site->id ?? '';
             $siteName = $site->name ?? '';
+            $siteHandle = $site->handle ?? '';
 
             // Force-set the current site. This will either be the current site the user is on for front-end requests,
             // or the site saved against the submission. When being run from a queue there's no concept of the 'site'
@@ -205,15 +208,18 @@ class Variables
                 'submissionId' => $submission->id ?? null,
                 'submissionUid' => $submission->uid ?? null,
                 'submissionDate' => $dateCreated?->format('Y-m-d H:i:s'),
+                'submissionSite' => $submission?->siteId ?? null,
 
-                'siteName' => $siteName,
                 'systemEmail' => $systemEmail,
                 'systemReplyTo' => $systemReplyTo,
                 'systemName' => $systemName,
                 'craft' => new CraftVariable(),
                 'currentSite' => $site,
                 'currentUser' => $currentUser,
+                'siteName' => $siteName,
                 'siteUrl' => $site->getBaseUrl(),
+                'siteId' => $siteId,
+                'siteHandle' => $siteHandle,
 
                 'timestamp' => $now->format('Y-m-d H:i:s'),
                 'dateUs' => $now->format('m/d/Y'),
