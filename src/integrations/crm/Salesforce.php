@@ -7,12 +7,13 @@ use verbb\formie\base\Integration;
 use verbb\formie\elements\Submission;
 use verbb\formie\events\ModifyFieldIntegrationValueEvent;
 use verbb\formie\fields\FileUpload;
+use verbb\formie\helpers\Assets;
 use verbb\formie\helpers\ArrayHelper;
 use verbb\formie\models\IntegrationField;
 use verbb\formie\models\IntegrationFormSettings;
 
 use Craft;
-use craft\fs\Local;
+use craft\base\LocalFsInterface;
 use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\FileHelper;
@@ -715,14 +716,11 @@ class Salesforce extends Crm implements OAuthProviderInterface
             $assets = $fileUpload['value']->all();
 
             foreach ($assets as $asset) {
-                // Check for local assets - they're easy
-                if (get_class($asset->getVolume()->getFs()) === Local::class) {
-                    $path = $asset->getVolume()->getFs()->getRootPath() . DIRECTORY_SEPARATOR . $asset->getPath();
+                $path = Assets::getFullAssetFilePath($asset);
 
-                    $path = FileHelper::normalizePath($path);
-                } else {
-                    // Make a local copy of the file, and store, so we can delete
-                    $localAttachments[] = $path = $asset->getCopyOfFile();
+                // If a non-local asset, store so we can delete later
+                if (!($asset->getVolume()->getFs() instanceof LocalFsInterface)) {
+                    $localAttachments[] = $path;
                 }
 
                 $fileContent = base64_encode(file_get_contents($path));

@@ -9,17 +9,17 @@ use verbb\formie\events\MailRenderEvent;
 use verbb\formie\fields\FileUpload;
 use verbb\formie\fields\Group;
 use verbb\formie\fields\Repeater;
+use verbb\formie\helpers\Assets;
 use verbb\formie\helpers\StringHelper;
 use verbb\formie\helpers\Variables;
 use verbb\formie\models\Notification;
 use verbb\formie\models\Settings;
 
 use Craft;
+use craft\base\LocalFsInterface;
 use craft\elements\Asset;
 use craft\elements\db\AssetQuery;
-use craft\fs\Local;
 use craft\helpers\App;
-use craft\helpers\Assets;
 use craft\helpers\FileHelper;
 use craft\helpers\HtmlPurifier;
 use craft\helpers\Json;
@@ -584,14 +584,11 @@ class Emails extends Component
     private function _attachAssetsToEmail($assets, Message $message): void
     {
         foreach ($assets as $asset) {
-            $path = '';
+            $path = Assets::getFullAssetFilePath($asset);
 
-            // Check for local assets - they're easy
-            if (get_class($asset->getVolume()->getFs()) === Local::class) {
-                $path = $this->_getFullAssetFilePath($asset);
-            } else {
-                // Make a local copy of the file, and store, so we can delete
-                $this->_tempAttachments[] = $path = $asset->getCopyOfFile();
+            // If a non-local asset, store so we can delete later
+            if (!($asset->getVolume()->getFs() instanceof LocalFsInterface)) {
+                $this->_tempAttachments[] = $path;
             }
 
             // Check for asset size, 0kb files are technically invalid (or at least spammy)
@@ -612,13 +609,6 @@ class Emails extends Component
                 $message->attach($path, ['fileName' => $asset->filename]);
             }
         }
-    }
-
-    private function _getFullAssetFilePath(Asset $asset): string
-    {
-        $path = $asset->getVolume()->getFs()->getRootPath() . DIRECTORY_SEPARATOR . $asset->getPath();
-
-        return FileHelper::normalizePath($path);
     }
 
     private function _serializeEmail($email): array
