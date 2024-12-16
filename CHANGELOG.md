@@ -1,5 +1,38 @@
 # Changelog
 
+## 3.0.15 - 2024-12-17
+
+### Added
+- Add more comprehensive logging for user element integration.
+- Provide Freeform 4 and Freeform 5 migrations.
+- Add “Site” to conditions builders.
+
+### Changed
+- Update Freeform migration to support Freeform 5+.
+
+### Fixed
+- Fix not restoring trashed stencils when applying from project config.
+- Fix form export not exporting number values correctly.
+- Fix email notification file attachments not working correctly in some instances with sub-paths configured.
+- Fix an error with client-side validation not clearing validation errors when rectified for some HTML elements.
+- Fix an error with Pardot integration and requests.
+- Fix an error when submissions had invalid content.
+- Fix not restoring trashed stencils when applying from project config.
+- Fix dynamic field settings not being applied to fields when editing a submission.
+- Fix a validation error for Name fields in some languages where the Prefix options contained duplicate labels.
+- Fix Name fields not validating correctly when saving for single-name fields.
+- Fix an error when cloning some fields.
+- Fix an issue when pre-populating Group or Repeater fields.
+- Fix globally-enabled captchas not being enabled for new forms.
+- Fix File Upload fields not working correctly in multi-page forms, in some cases.
+- Fix an error for Checkboxes fields when using numeric values for options.
+- Fix conditions not handling numbers correctly when evaluating conditions.
+- Fix Date field’s default value not working correctly when set to Today’s date.
+- Fix `Date::displayType` missing from Date field’s GraphQL schema.
+- Fix an error when querying Table fields in some cases.
+- Fix MissingField instances being included in GraphQL responses in some cases.
+- Fix Captcha integrations not firing `validateCustom()` JS event.
+
 ## 3.0.14 - 2024-12-03
 
 ### Fixed
