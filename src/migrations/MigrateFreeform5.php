@@ -2,14 +2,14 @@
 namespace verbb\formie\migrations;
 
 use verbb\formie\Formie;
-use verbb\formie\base\FieldInterface as FormieFieldInterface;
+use verbb\formie\base\FormFieldInterface as FormieFieldInterface;
 use verbb\formie\elements\Form as FormieForm;
 use verbb\formie\elements\Submission;
 use verbb\formie\events\ModifyMigrationFieldEvent;
 use verbb\formie\events\ModifyMigrationFormEvent;
 use verbb\formie\events\ModifyMigrationNotificationEvent;
 use verbb\formie\events\ModifyMigrationSubmissionEvent;
-use verbb\formie\fields as formiefields;
+use verbb\formie\fields\formfields as formiefields;
 use verbb\formie\helpers\ArrayHelper;
 use verbb\formie\helpers\StringHelper;
 use verbb\formie\helpers\Variables;
@@ -45,7 +45,7 @@ use Solspace\Freeform\Elements\Submission as FreeformSubmission;
 use Solspace\Freeform\Library\Composer\Components\Fields\DataContainers\Option;
 use Solspace\Freeform\Notifications\Types\Admin\Admin;
 
-class MigrateFreeform extends Migration
+class MigrateFreeform5 extends Migration
 {
     // Constants
     // =========================================================================
@@ -126,14 +126,16 @@ class MigrateFreeform extends Migration
 
             $form = $this->_form = $event->newForm;
 
-            $this->_buildFieldLayout($freeformForm);
+            if ($fieldLayout = $this->_buildFieldLayout($freeformForm)) {
+                $form->setFormFieldLayout($fieldLayout);
+            }
 
             if (!$event->isValid) {
                 $this->stdout("    > Skipped form due to event cancellation.", Console::FG_YELLOW);
                 return $form;
             }
 
-            if (!Craft::$app->getElements()->saveElement($form)) {
+            if (!Formie::$plugin->getForms()->saveForm($form)) {
                 $this->stdout("    > Failed to save form “{$form->handle}”.", Console::FG_RED);
 
                 foreach ($form->getErrors() as $attr => $errors) {
@@ -309,7 +311,6 @@ class MigrateFreeform extends Migration
                     $newNotification = new Notification();
                     $newNotification->formId = $this->_form->id;
                     $newNotification->name = $notification->getName();
-                    $newNotification->handle = Formie::$plugin->getNotifications()->getUniqueNotificationHandle($newNotification);
                     $newNotification->subject = $notification->getTemplate()->getSubject();
                     $newNotification->recipients = 'email';
                     $newNotification->to = implode(',', $notification->getRecipients()->emailsToArray());
@@ -397,22 +398,23 @@ class MigrateFreeform extends Migration
         }
     }
 
-    private function _buildFieldLayout(FreeformForm $form): void
+    private function _buildFieldLayout(FreeformForm $form): FieldLayout
     {
+        $fieldLayout = new FieldLayout(['type' => Form::class]);
+        $fieldLayout->type = Form::class;
+
         $pages = [];
         $fields = [];
         $layout = $form->getLayout();
 
         foreach ($layout->getPages() as $pageIndex => $page) {
-            $newPage = [];
-            $newPage['label'] = $page->getLabel();
+            $newPage = new FieldLayoutPage();
+            $newPage->name = $page->getLabel();
+            $newPage->sortOrder = '' . $pageIndex;
 
-            // $pageFields = [];
-            $fieldHashes = [];
+            $pageFields = [];
 
             foreach ($page->getRows() as $rowIndex => $row) {
-                $newRow = [];
-
                 foreach ($row as $fieldIndex => $field) {
                     $newField = $this->_mapField($field);
 
@@ -445,17 +447,14 @@ class MigrateFreeform extends Migration
                                 }
                             }
                         } else {
-                            $fieldHashes[] = $field->getHandle();
-
-                            $newRow['fields'][] = $newField;
+                            $newField->sortOrder = $fieldIndex;
+                            $newField->rowIndex = $rowIndex;
+                            $pageFields[] = $newField;
+                            $fields[] = $newField;
                         }
                     } else {
                         $this->stdout("    > Failed to migrate field “{$field->getHandle()}” on form “{$form->handle}”. Unsupported field.", Console::FG_RED);
                     }
-                }
-
-                if ($newRow) {
-                    $newPage['rows'][] = $newRow;
                 }
             }
 
@@ -466,10 +465,15 @@ class MigrateFreeform extends Migration
             $newPage['settings']['submitButtonLabel'] = $page->getButtons()->getSubmitLabel();
             $newPage['settings']['backButtonLabel'] = $page->getButtons()->getBackLabel();
 
+            $newPage->setLayout($fieldLayout);
+            $newPage->setCustomFields($pageFields);
             $pages[] = $newPage;
         }
 
-        $this->_form->getFormLayout()->setPages($pages);
+        $fieldLayout->setPages($pages);
+        $fieldLayout->setCustomFields($fields);
+
+        return $fieldLayout;
     }
 
     private function _mapField(FreeformFieldInterfae $field): ?FormieFieldInterface
@@ -554,9 +558,9 @@ class MigrateFreeform extends Migration
                 $newField = new formiefields\FileUpload();
                 $this->_applyFieldDefaults($newField);
 
-                $source = $field->getAssetSourceId();
+                $sourceId = $field->getAssetSourceId();
 
-                if ($source = Craft::$app->getAssets()->getRootFolderByVolumeId($source)) {
+                if ($sourceId && $source = Craft::$app->getAssets()->getRootFolderByVolumeId($sourceId)) {
                     $newField->uploadLocationSource = "folder:{$source->getVolume()->uid}";
                 } else if ($volumes = Craft::$app->getVolumes()->getAllVolumes()) {
                     $newField->uploadLocationSource = "folder:{$volumes[0]->uid}";
@@ -705,8 +709,8 @@ class MigrateFreeform extends Migration
                 return null;
         }
 
-        if (!$newField->label) {
-            $newField->label = $field->getLabel();
+        if (!$newField->name) {
+            $newField->name = $field->getLabel();
         }
 
         if (!$newField->handle) {
@@ -794,7 +798,7 @@ class MigrateFreeform extends Migration
                 $attrs = ArrayHelper::firstWhere($variables, 'value', $token);
                 if (!$attrs && $field = $this->_form->getFieldByHandle(trim($matches['handle']))) {
                     $attrs = [
-                        'label' => $field->label,
+                        'label' => $field->name,
                         'value' => $token,
                     ];
                 }
