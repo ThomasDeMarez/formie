@@ -39,6 +39,7 @@ use craft\helpers\ElementHelper;
 use craft\helpers\FileHelper;
 use craft\helpers\Gql as GqlHelper;
 use craft\helpers\Html;
+use craft\helpers\Json;
 use craft\helpers\Template;
 use craft\models\Volume;
 use craft\models\VolumeFolder;
@@ -652,7 +653,7 @@ class FileUpload extends ElementField
             // The easiest method is to just re-serialize all field values and save the content as a whole
             $content = $element->serializeFieldValues();
             
-            Db::update(Table::FORMIE_SUBMISSIONS, ['content' => Db::prepareForJsonColumn($content)], ['id' => $element->id]);
+            Db::update(Table::FORMIE_SUBMISSIONS, ['content' => Json::encode($content)], ['id' => $element->id]);
         }
     }
 
